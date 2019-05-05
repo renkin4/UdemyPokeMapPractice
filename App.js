@@ -1,21 +1,59 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
+import SignIn from "./src/SignIn.js";
+import Meteor, {createContainer, Accounts} from 'react-native-meteor';
 
-export default class App extends React.Component {
-  render() {
+const SERVER_URL = "ws://localhost:3000/websocket";
+
+class App extends React.Component 
+{
+  state = 
+  {
+    CurrentScreen : "",
+  };
+
+  signIn = (email, password) =>
+  {
+    Meteor.loginWithPassword(email,password,(error, data) => 
+    {
+      if(error)
+      {
+        //Creating new user
+        if(error.reason === "User not found")
+        {
+          console.log("There is no Email Found");
+          Accounts.createUser({email,password}, (error) => 
+          {
+            console.log(error);
+          });
+        }
+      }
+      else
+      {
+        console.log("Email Found");
+        // TODO Sign In
+      }
+    });
+    console.log(Meteor.userId());
+  }
+
+  render() 
+  {
     return (
-      <View style={styles.container}>
-        <Text>Open up App.js to start working on your app!</Text>
+      <View style={style.Container}>
+        <SignIn signIn = {this.signIn}/>
       </View>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
+const style = 
+{
+  Container: 
+  {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#FFF',
   },
-});
+};
+
+export default App;

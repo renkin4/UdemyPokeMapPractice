@@ -16,7 +16,7 @@ class SignIn extends React.Component
     {
         var email = this.state.email;
         var password = this.state.password;
-
+        //console.log("Email : " + email + "Password : " + password);
         this.props.signIn(email,password);
     }
 

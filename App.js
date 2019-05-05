@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import SignIn from "./src/SignIn.js";
-import Meteor, {CreateContainer, Accounts} from 'react-native-meteor';
+import Meteor, {createContainer, Accounts} from 'react-native-meteor';
 import PokeMap from "./src/PokeMap.js";
 
 const SERVER_URL = "ws://192.168.0.102:3000/websocket";

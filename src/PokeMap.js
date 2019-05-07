@@ -418,7 +418,7 @@ class PokeMap extends React.Component
                         <Title> PokeMap </Title>
                     </Body>
                     <Right>
-                        <Button transparent>
+                        <Button transparent onPress = {()=> {Meteor.logout(); this.props.flipLogin(false);}} > 
                             <Icon name = "power"/>
                         </Button>
                     </Right>

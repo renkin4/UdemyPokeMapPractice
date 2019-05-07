@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, ImageBackground } from 'react-native';
+import { Text, View, Image } from 'react-native';
 import { Header, Left, Button, Icon, Body, Title, Right, Fab } from "native-base";
 import { MapView } from "expo";
 import Meteor, {createContainer} from "react-native-meteor";
@@ -362,7 +362,46 @@ class PokeMap extends React.Component
         console.log(loc);
         this.setState({location : loc});
     }
+    addPokemon = () =>
+    {
+        Meteor.call("pokemon.add", 
+        this.state.location, 
+        (err,res) => 
+            { console.log("add function", err ,res)
+        });
+    }
+    removePokemon = () => 
+    {
+        if(this.props.pokemon.length === 0)
+        {
+            console.log("No Pokemon to remove ");
+            return;
+        }
+        var removedPoke = this.props.pokemon[0]._id;
 
+        Meteor.call("pokemon.subtract", 
+        removedPoke, 
+        (err,res) => 
+            { console.log("deleting function", err ,res)
+        });
+    }
+    renderPokemon = () =>
+    {
+        return this.props.pokemon.map(p=>
+            {
+                return(
+                    <MapView.Marker
+                        coordinate={{longitude: p.longitude, latitude: p.latitude}}
+                        key = {p._id}
+                    >
+                        <Image source = {{uri : "http://192.168.0.102:3000/" + p.image}} 
+                            style = {{height : 50, width: 50}}
+                        />
+                    </MapView.Marker>
+                )
+            })
+
+    }
     render()
     {
         if (!this.state.isReady) 
@@ -391,11 +430,13 @@ class PokeMap extends React.Component
                     customMapStyle = {mapStyle}
                     onRegionChangeComplete = {(loc) => this.recordEvent(loc)}
                 >
+                    {this.renderPokemon()}
                 </MapView>
                 <Fab
                     direction = "left"
                     position = "bottomRight"
                     style = {{backgroundColor : 'green'}}
+                    onPress = {this.addPokemon}
                 >
                     <Icon name = "add"/>
                 </Fab>
@@ -404,6 +445,7 @@ class PokeMap extends React.Component
                     direction = "right"
                     position = "bottomLeft"
                     style = {{backgroundColor : 'red'}}
+                    onPress = {this.removePokemon}
                 >
                     <Icon name = "remove"/>
                 </Fab>
@@ -412,4 +454,11 @@ class PokeMap extends React.Component
     }
 }
 
-export default PokeMap;
+export default createContainer(params=>
+    {
+        Meteor.subscribe("pokemon");
+
+        return{
+            pokemon: Meteor.collection('pokemon').find({})
+        };
+    }, PokeMap);
